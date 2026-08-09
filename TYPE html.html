@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pain_tBee | Handmade Art Studio & E-Commerce</title>
+
+  <!-- Google Fonts for Aesthetic Vibe -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Three.js Library for 3D Background Canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #fdf2f4;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #3a252a;
+      --text-muted: #8c6870;
+      
+      --dusty-rose: #dca2a8;
+      --pastel-yellow: #fef08a;
+      
+      --accent: #dca2a8;
+      --accent-hover: #c98a91;
+      --accent-soft: rgba(253, 226, 230, 0.85);
+      --border: rgba(220, 162, 168, 0.4);
+      --shadow: 0 12px 35px rgba(220, 162, 168, 0.2);
+      --input-bg: #ffffff;
+      --header-bg: rgba(253, 242, 244, 0.88);
+      --badge-bg: #fef08a;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1013;
+      --card-bg: rgba(36, 22, 27, 0.92);
+      --text-main: #fcf0f2;
+      --text-muted: #b8929a;
+      
+      --accent: #e5adb3;
+      --accent-hover: #f0c2c7;
+      --accent-soft: rgba(54, 30, 37, 0.85);
+      --border: rgba(94, 52, 63, 0.8);
+      --shadow: 0 16px 45px rgba(0, 0, 0, 0.65);
+      --input-bg: rgba(46, 28, 34, 0.95);
+      --header-bg: rgba(26, 16, 19, 0.9);
+      --badge-bg: #5a4800;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding-bottom: 80px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #bg3d {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Navigation Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--header-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title .paint-part { color: var(--dusty-rose); }
+    .brand-title .bee-part { color: var(--pastel-yellow); text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+    .nav-mode-badge {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: var(--dusty-rose);
+      color: white;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 8px 18px;
+      border-radius: 25px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--dusty-rose), #c98a91);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(220, 162, 168, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-soft);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger { background: #ff4d4d; color: white; }
+    .btn-danger:hover { background: #e03a3a; }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      border-radius: 12px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      max-width: 1250px;
+      margin: 25px auto 10px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .search-box {
+      position: relative;
+      flex-grow: 1;
+      max-width: 380px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 18px;
+      border-radius: 25px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.85rem;
+    }
+
+    /* Order Tracking Banner */
+    .tracking-banner {
+      max-width: 1250px;
+      margin: 15px auto 20px;
+      padding: 18px 25px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .tracking-input-group {
+      display: flex;
+      gap: 8px;
+      flex-grow: 1;
+      max-width: 500px;
+    }
+
+    .tracking-input-group input {
+      flex-grow: 1;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    /* Grid Layout */
+    .categories-grid {
+      max-width: 1250px;
+      margin: 20px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 30px;
+    }
+
+    /* Category Box */
+    .cat-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .cat-box:hover {
+      transform: translateY(-4px);
+      border-color: var(--dusty-rose);
+    }
+
+    .cat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+      border-bottom: 2px dashed var(--border);
+    }
+
+    .cat-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      font-style: italic;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+
+    .product-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow);
+    }
+
+    .product-img-wrapper {
+      width: 100%;
+      height: 140px;
+      position: relative;
+      background: #fbf0f2;
+    }
+
+    .product-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-details {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .product-price {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: auto;
+    }
+
+    .product-card-actions {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .action-icon-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 480px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-box h3 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 18px;
+      color: var(--accent);
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .img-preview {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 8px;
+      display: none;
+      border: 1px solid var(--border);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    /* Cart Drawer & Order Status Badges */
+    .status-pill {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .status-processing { background: #ffe4a0; color: #8a5a00; }
+    .status-crafting { background: #e0f2fe; color: #0369a1; }
+    .status-shipped { background: #dcfce7; color: #15803d; }
+    .status-delivered { background: #fbcfe8; color: #9d174d; }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Background -->
+  <canvas id="bg3d"></canvas>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="brand" onclick="resetView()">
+      <span class="brand-icon">🐝</span>
+      <h1 class="brand-title"><span class="paint-part">Pain_t</span><span class="bee-part">Bee</span></h1>
+      <span class="nav-mode-badge" id="modeBadge">Customer View</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="openCartModal()">🛒 Cart (<span id="cartCount">0</span>)</button>
+      <button class="btn btn-outline" id="adminToggleBtn" onclick="toggleAdminPanel()">🔒 Admin Panel</button>
+      <button class="btn btn-outline" id="themeToggleBtn" onclick="toggleTheme()">🌙 Dark</button>
+    </div>
+  </header>
+
+  <!-- Live Order Tracking Bar -->
+  <section class="tracking-banner">
+    <div>
+      <h4 style="font-family:'Playfair Display', serif; font-size:1.1rem;">Track Your Handmade Order 📦</h4>
+      <p style="font-size:0.78rem; color:var(--text-muted);">Enter your Tracking ID to see crafting & shipping progress</p>
+    </div>
+    <div class="tracking-input-group">
+      <input type="text" id="trackInput" placeholder="Enter Order ID (e.g. PB-8492)">
+      <button class="btn btn-primary btn-sm" onclick="trackOrder()">Track</button>
+    </div>
+  </section>
+
+  <!-- Filter & Admin Action Bar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 Search handcrafted items or categories..." oninput="handleSearch()">
+    </div>
+    <div id="adminControls" style="display:none; gap:8px;">
+      <button class="btn btn-primary btn-sm" onclick="openCategoryModal()">+ Add Category Box</button>
+      <button class="btn btn-outline btn-sm" onclick="openOrdersManager()">📋 View All Orders</button>
+      <button class="btn btn-outline btn-sm" onclick="resetToDefaultData()">🔄 Reset Data</button>
+    </div>
+  </div>
+
+  <!-- Category Boxes Container Grid -->
+  <main class="categories-grid" id="categoryContainer"></main>
+
+  <footer>
+    <p>© Pain_tBee E-Commerce Studio | Complete Frontend Architecture</p>
+  </footer>
+
+  <!-- Reusable Modal -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Form Title</h3>
+      <div id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="modalSaveBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial Master Category & Product Data
+    const defaultStudioData = [
+      {
+        id: "cat_1",
+        title: "Signature Detailed Canvas Art 🎨",
+        products: [
+          { id: "p_101", title: "Royal Floral Canvas", price: 2500, image: "https://picsum.photos/300?random=101" },
+          { id: "p_102", title: "Golden Horizon Abstract", price: 3200, image: "https://picsum.photos/300?random=102" }
+        ]
+      },
+      {
+        id: "cat_2",
+        title: "Basic Canvas Art 🖌️",
+        products: [
+          { id: "p_103", title: "Minimal Minimalist Strokes", price: 1200, image: "https://picsum.photos/300?random=103" }
+        ]
+      },
+      {
+        id: "cat_3",
+        title: "Hand-Painted Mirror Art 🪞",
+        products: [
+          { id: "p_104", title: "Botanical Floral Mirror", price: 1850, image: "https://picsum.photos/300?random=104" }
+        ]
+      },
+      {
+        id: "cat_4",
+        title: "Custom Portrait Art Hand-Painted 🖼️",
+        products: [
+          { id: "p_105", title: "Personalized Couple Canvas", price: 2800, image: "https://picsum.photos/300?random=105" }
+        ]
+      },
+      {
+        id: "cat_5",
+        title: "Jewellery & Bangles 💍",
+        products: [
+          { id: "p_106", title: "Handpainted Wooden Bangle Set", price: 850, image: "https://picsum.photos/300?random=106" }
+        ]
+      },
+      {
+        id: "cat_6",
+        title: "Handcrafted Clay Art 🏺",
+        products: [
+          { id: "p_107", title: "Terracotta Flower Vase", price: 950, image: "https://picsum.photos/300?random=107" }
+        ]
+      },
+      {
+        id: "cat_7",
+        title: "Handpainted Sharee 👗",
+        products: [
+          { id: "p_108", title: "Floral Cotton Sharee", price: 3800, image: "https://picsum.photos/300?random=108" }
+        ]
+      },
+      {
+        id: "cat_8",
+        title: "Fabric Painting 🧵",
+        products: [
+          { id: "p_109", title: "Handpainted Cushion Cover", price: 650, image: "https://picsum.photos/300?random=109" }
+        ]
+      }
+    ];
+
+    // App State Management
+    let studioData = JSON.parse(localStorage.getItem('paintbee_v11_data')) || defaultStudioData;
+    let cart = JSON.parse(localStorage.getItem('paintbee_cart')) || [];
+    let orders = JSON.parse(localStorage.getItem('paintbee_orders')) || [
+      { id: "PB-8492", customer: "Ayesha Rahman", phone: "01700000000", total: 2500, status: "crafting", items: ["Royal Floral Canvas"] }
+    ];
+    let isAdminMode = false;
+    let tempImageBase64 = "";
+
+    function saveData() {
+      localStorage.setItem('paintbee_v11_data', JSON.stringify(studioData));
+      localStorage.setItem('paintbee_cart', JSON.stringify(cart));
+      localStorage.setItem('paintbee_orders', JSON.stringify(orders));
+      updateCartCount();
+      renderStudio();
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((acc, item) => acc + item.qty, 0);
+      document.getElementById('cartCount').innerText = count;
+    }
+
+    // Toggle Admin Panel Mode
+    function toggleAdminPanel() {
+      if (!isAdminMode) {
+        const password = prompt("Enter Admin Secret Key (Default: 1234):");
+        if (password === "1234") {
+          isAdminMode = true;
+          document.getElementById('modeBadge').innerText = "Admin Studio";
+          document.getElementById('adminToggleBtn').innerText = "👤 Exit Admin";
+          document.getElementById('adminControls').style.display = "flex";
+        } else {
+          alert("Incorrect secret key!");
+        }
+      } else {
+        isAdminMode = false;
+        document.getElementById('modeBadge').innerText = "Customer View";
+        document.getElementById('adminToggleBtn').innerText = "🔒 Admin Panel";
+        document.getElementById('adminControls').style.display = "none";
+      }
+      renderStudio();
+    }
+
+    function renderStudio(filterQuery = '') {
+      const container = document.getElementById('categoryContainer');
+      container.innerHTML = '';
+      const query = filterQuery.toLowerCase().trim();
+
+      studioData.forEach(cat => {
+        const filteredProducts = cat.products.filter(p => 
+          p.title.toLowerCase().includes(query) || cat.title.toLowerCase().includes(query)
+        );
+
+        if (query && filteredProducts.length === 0 && !cat.title.toLowerCase().includes(query)) return;
+
+        const catBox = document.createElement('div');
+        catBox.className = 'cat-box';
+
+        catBox.innerHTML = `
+          <div class="cat-header">
+            <h3 class="cat-title">${cat.title}</h3>
+            ${isAdminMode ? `
+              <div class="cat-actions">
+                <button class="btn btn-outline btn-sm" onclick="editCategory('${cat.id}')">✏️ Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteCategory('${cat.id}')">🗑️ Delete</button>
+              </div>
+            ` : ''}
+          </div>
+          <div class="product-grid">
+            ${filteredProducts.map(prod => `
+              <div class="product-card">
+                ${isAdminMode ? `
+                  <div class="product-card-actions">
+                    <button class="action-icon-btn" onclick="openProductModal('${cat.id}', '${prod.id}')">✏️</button>
+                    <button class="action-icon-btn" onclick="deleteProduct('${cat.id}', '${prod.id}')">✕</button>
+                  </div>
+                ` : ''}
+                <div class="product-img-wrapper">
+                  <img src="${prod.image}" alt="${prod.title}" onerror="this.src='https://picsum.photos/300?random=99'">
+                </div>
+                <div class="product-details">
+                  <div class="product-title">${prod.title}</div>
+                  <div class="product-price">৳ ${prod.price}</div>
+                  <button class="btn btn-primary btn-sm" style="margin-top:8px; width:100%;" onclick="addToCart('${prod.id}', '${prod.title}', ${prod.price}, '${prod.image}')">
+                    🛒 Add to Cart
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${isAdminMode ? `
+            <button class="btn btn-outline btn-sm" style="width:100%" onclick="openProductModal('${cat.id}')">+ Add Product</button>
+          ` : ''}
+        `;
+
+        container.appendChild(catBox);
+      });
+    }
+
+    // Shopping Cart Operations
+    function addToCart(id, title, price, image) {
+      const existing = cart.find(i => i.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ id, title, price, image, qty: 1 });
+      }
+      saveData();
+      alert(`"${title}" added to your cart!`);
+    }
+
+    function openCartModal() {
+      const modal = document.getElementById('formModal');
+      document.getElementById('modalTitle').innerText = "Your Shopping Cart 🛒";
+      
+      let total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+      document.getElementById('modalBody').innerHTML = cart.length === 0 ? `
+        <p style="text-align:center; color:var(--text-muted); padding:20px;">Your cart is currently empty.</p>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${cart.map(item => `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:8px;">
+              <div>
+                <div style="font-weight:600; font-size:0.85rem;">${item.title}</div>
+                <div style="font-size:0.75rem; color:var(--accent);">৳ ${item.price} x ${item.qty}</div>
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="removeFromCart('${item.id}')">✕</button>
+            </div>
+          `).join('')}
+          <div style="text-align:right; font-weight:700; margin-top:10px;">Total: ৳ ${total}</div>
+        </div>
+      `;
+
+      document.getElementById('modalFooter').innerHTML = cart.length > 0 ? `
+        <button class="btn btn-outline" onclick="closeModal()">Continue Shopping</button>
+        <button class="btn btn-primary" onclick="openCheckoutModal()">Checkout Now</button>
+      ` : `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+
+      modal.style.display = 'flex';
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(i => i.id !== id);
+      saveData();
+      openCartModal();
+    }
+
+    function openCheckoutModal() {
+      document.getElementById('modalTitle').innerText = "Complete Your Order 🛍️";
+      const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+      document.getElementById('modalBody').innerHTML = `
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="custName" placeholder="e.g. Nusrat Jahan">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="custPhone" placeholder="017XXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Delivery Address</label>
+          <input type="text" id="custAddress" placeholder="House, Road, City">
+        </div>
+        <div style="margin-top:12px; font-weight:600;">Total Payable: ৳ ${total}</div>
+      `;
+
+      document.getElementById('modalFooter').innerHTML = `
+        <button class="btn btn-outline" onclick="openCartModal()">Back</button>
+        <button class="btn btn-primary" onclick="placeOrder()">Place Order</button>
+      `;
+    }
+
+    function placeOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+
+      if (!name || !phone || !address) return alert("Please fill in all order details!");
+
+      const orderId = "PB-" + Math.floor(1000 + Math.random() * 9000);
+      const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+      const newOrder = {
+        id: orderId,
+        customer: name,
+        phone: phone,
+        address: address,
+        total: total,
+        status: "processing",
+        items: cart.map(i => i.title)
+      };
+
+      orders.push(newOrder);
+      cart = [];
+      saveData();
+
+      alert(`🎉 Order Placed Successfully!\nYour Order Tracking ID: ${orderId}\nPlease save this ID to track progress.`);
+      closeModal();
+    }
+
+    // Live Order Tracking Search
+    function trackOrder() {
+      const trackId = document.getElementById('trackInput').value.trim().toUpperCase();
+      const order = orders.find(o => o.id === trackId);
+
+      if (!order) {
+        return alert("Order ID not found! Please check the ID and try again.");
+      }
+
+      document.getElementById('modalTitle').innerText = `Order Status: ${order.id}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div style="line-height:1.6; font-size:0.88rem;">
+          <p><strong>Customer:</strong> ${order.customer}</p>
+          <p><strong>Items:</strong> ${order.items.join(', ')}</p>
+          <p><strong>Total Amount:</strong> ৳ ${order.total}</p>
+          <p style="margin-top:10px;"><strong>Status:</strong> 
+            <span class="status-pill status-${order.status}">${order.status}</span>
+          </p>
+        </div>
+      `;
+      document.getElementById('modalFooter').innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+      document.getElementById('formModal').style.display = 'flex';
+    }
+
+    // Admin Orders Manager
+    function openOrdersManager() {
+      document.getElementById('modalTitle').innerText = "Admin Orders Portal 📋";
+      document.getElementById('modalBody').innerHTML = orders.length === 0 ? `
+        <p style="color:var(--text-muted);">No orders placed yet.</p>
+      ` : `
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${orders.map(o => `
+            <div style="border:1px solid var(--border); padding:12px; border-radius:12px; background:var(--input-bg);">
+              <div style="display:flex; justify-content:space-between; font-weight:600; font-size:0.85rem;">
+                <span>ID: ${o.id}</span>
+                <span>৳ ${o.total}</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin:4px 0;">Customer: ${o.customer} (${o.phone})</div>
+              <div class="form-group" style="margin-top:8px;">
+                <label>Update Live Status:</label>
+                <select onchange="updateOrderStatus('${o.id}', this.value)">
+                  <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
+                  <option value="crafting" ${o.status==='crafting'?'selected':''}>Handcrafting Art</option>
+                  <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped / Out for Delivery</option>
+                  <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+                </select>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('modalFooter').innerHTML = `<button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+      document.getElementById('formModal').style.display = 'flex';
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveData();
+        alert(`Order ${orderId} updated to ${newStatus}!`);
+      }
+    }
+
+    // Modal Form Controllers
+    function closeModal() {
+      document.getElementById('formModal').style.display = 'none';
+      tempImageBase64 = "";
+    }
+
+    function openCategoryModal() {
+      document.getElementById('modalTitle').innerText = "Create Category Box";
+      document.getElementById('modalBody').innerHTML = `
+        <div class="form-group">
+          <label>Category Box Name</label>
+          <input type="text" id="catTitleInput" placeholder="e.g. Resin Art Collection 💎">
+        </div>
+      `;
+      document.getElementById('modalFooter').innerHTML = `
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveCategory()">Create</button>
+      `;
+      document.getElementById('formModal').style.display = 'flex';
+    }
+
+    function saveCategory() {
+      const title = document.getElementById('catTitleInput').value.trim();
+      if (!title) return alert("Title required!");
+      studioData.push({ id: 'cat_' + Date.now(), title, products: [] });
+      saveData();
+      closeModal();
+    }
+
+    function editCategory(catId) {
+      const cat = studioData.find(c => c.id === catId);
+      document.getElementById('modalTitle').innerText = "Edit Category Name";
+      document.getElementById('modalBody').innerHTML = `
+        <div class="form-group">
+          <label>Category Title</label>
+          <input type="text" id="catTitleInput" value="${cat.title}">
+        </div>
+      `;
+      document.getElementById('modalFooter').innerHTML = `
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="updateCategory('${cat.id}')">Save Changes</button>
+      `;
+      document.getElementById('formModal').style.display = 'flex';
+    }
+
+    function updateCategory(catId) {
+      const title = document.getElementById('catTitleInput').value.trim();
+      if (!title) return alert("Title required!");
+      const cat = studioData.find(c => c.id === catId);
+      cat.title = title;
+      saveData();
+      closeModal();
+    }
+
+    function deleteCategory(catId) {
+      if (confirm("Delete this category box?")) {
+        studioData = studioData.filter(c => c.id !== catId);
+        saveData();
+      }
+    }
+
+    function openProductModal(catId, prodId = null) {
+      const cat = studioData.find(c => c.id === catId);
+      let prod = prodId ? cat.products.find(p => p.id === prodId) : null;
+      tempImageBase64 = prod ? prod.image : "";
+
+      document.getElementById('modalTitle').innerText = prod ? "Edit Product" : "Add Product";
+      document.getElementById('modalBody').innerHTML = `
+        <div class="form-group">
+          <label>Product Title</label>
+          <input type="text" id="prodTitleInput" value="${prod ? prod.title : ''}" placeholder="Product Name">
+        </div>
+        <div class="form-group">
+          <label>Price (৳)</label>
+          <input type="number" id="prodPriceInput" value="${prod ? prod.price : ''}" placeholder="e.g. 1500">
+        </div>
+        <div class="form-group">
+          <label>Upload Picture File</label>
+          <input type="file" id="prodFileInput" accept="image/*" onchange="handleFileSelect(event)">
+        </div>
+        <div class="form-group">
+          <label>OR Paste Image URL</label>
+          <input type="text" id="prodUrlInput" value="${prod && prod.image.startsWith('http') ? prod.image : ''}" placeholder="https://example.com/image.jpg" oninput="handleUrlInput(this.value)">
+        </div>
+        <img id="imgPreview" class="img-preview" src="${prod ? prod.image : ''}" style="display:${prod ? 'block' : 'none'}">
+      `;
+
+      document.getElementById('modalFooter').innerHTML = `
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProduct('${cat.id}', '${prodId || ''}')">Save Product</button>
+      `;
+      document.getElementById('formModal').style.display = 'flex';
+    }
+
+    function saveProduct(catId, prodId) {
+      const title = document.getElementById('prodTitleInput').value.trim();
+      const price = parseFloat(document.getElementById('prodPriceInput').value);
+      const urlInput = document.getElementById('prodUrlInput').value.trim();
+
+      let finalImage = tempImageBase64 || urlInput;
+
+      if (!title || isNaN(price)) return alert("Title and Price are required!");
+      if (!finalImage) finalImage = `https://picsum.photos/300?random=${Math.floor(Math.random() * 500)}`;
+
+      const cat = studioData.find(c => c.id === catId);
+      if (prodId) {
+        let prod = cat.products.find(p => p.id === prodId);
+        prod.title = title;
+        prod.price = price;
+        prod.image = finalImage;
+      } else {
+        cat.products.push({ id: 'p_' + Date.now(), title, price, image: finalImage });
+      }
+
+      saveData();
+      closeModal();
+    }
+
+    function deleteProduct(catId, prodId) {
+      const cat = studioData.find(c => c.id === catId);
+      cat.products = cat.products.filter(p => p.id !== prodId);
+      saveData();
+    }
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        tempImageBase64 = e.target.result;
+        const preview = document.getElementById('imgPreview');
+        preview.src = tempImageBase64;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleUrlInput(val) {
+      if (val.trim()) {
+        tempImageBase64 = "";
+        const preview = document.getElementById('imgPreview');
+        preview.src = val.trim();
+        preview.style.display = 'block';
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value;
+      renderStudio(query);
+    }
+
+    function resetView() {
+      document.getElementById('searchInput').value = '';
+      renderStudio();
+    }
+
+    function resetToDefaultData() {
+      if (confirm("Reset dataset?")) {
+        studioData = JSON.parse(JSON.stringify(defaultStudioData));
+        saveData();
+      }
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const btn = document.getElementById('themeToggleBtn');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.removeAttribute('data-theme');
+        btn.innerText = "🌙 Dark";
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.innerText = "☀️ Light";
+      }
+      trigger3DMorph();
+    }
+
+    // --- 3D CANVAS ENGINE ---
+    let scene, camera, renderer, itemsGroup, pointLight;
+    let targetColor = new THREE.Color(0xdca2a8);
+    const themePalettes = [0xdca2a8, 0xfef08a, 0xe2a8af, 0xfce488, 0xd4969c];
+    let colorIndex = 0;
+
+    function createFlowerMesh() {
+      const flowerGroup = new THREE.Group();
+      const petalGeo = new THREE.ConeGeometry(0.5, 1.2, 5);
+      const petalMat = new THREE.MeshPhongMaterial({ color: 0xdca2a8, shininess: 90 });
+
+      for (let i = 0; i < 5; i++) {
+        const petal = new THREE.Mesh(petalGeo, petalMat);
+        petal.rotation.z = (i * Math.PI * 2) / 5;
+        petal.position.x = Math.cos((i * Math.PI * 2) / 5) * 0.5;
+        petal.position.y = Math.sin((i * Math.PI * 2) / 5) * 0.5;
+        flowerGroup.add(petal);
+      }
+
+      const centerGeo = new THREE.SphereGeometry(0.4, 12, 12);
+      const centerMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.8, roughness: 0.2 });
+      flowerGroup.add(new THREE.Mesh(centerGeo, centerMat));
+
+      return flowerGroup;
+    }
+
+    function createDiamondMesh() {
+      const geo = new THREE.OctahedronGeometry(0.8, 0);
+      const mat = new THREE.MeshStandardMaterial({ color: 0xfef08a, metalness: 0.9, roughness: 0.1, transparent: true, opacity: 0.95 });
+      return new THREE.Mesh(geo, mat);
+    }
+
+    function createEmojiBadgeMesh() {
+      const geo = new THREE.TorusGeometry(0.6, 0.2, 8, 20);
+      const mat = new THREE.MeshPhongMaterial({ color: 0xdca2a8, shininess: 100 });
+      return new THREE.Mesh(geo, mat);
+    }
+
+    function init3DBackground() {
+      const canvas = document.getElementById('bg3d');
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 35;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      itemsGroup = new THREE.Group();
+
+      for (let i = 0; i < 110; i++) {
+        let mesh;
+        const type = Math.random();
+
+        if (type < 0.35) mesh = createFlowerMesh();
+        else if (type < 0.70) mesh = createDiamondMesh();
+        else mesh = createEmojiBadgeMesh();
+
+        mesh.position.set((Math.random() - 0.5) * 85, (Math.random() - 0.5) * 85, (Math.random() - 0.5) * 85);
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+        const s = 0.7 + Math.random() * 1.1;
+        mesh.scale.set(s, s, s);
+        mesh.userData = { speedY: 0.008 + Math.random() * 0.015, rotSpeed: 0.004 + Math.random() * 0.01 };
+
+        itemsGroup.add(mesh);
+      }
+
+      scene.add(itemsGroup);
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+      scene.add(ambientLight);
+
+      pointLight = new THREE.PointLight(0xdca2a8, 2.8, 120);
+      pointLight.position.set(20, 20, 20);
+      scene.add(pointLight);
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      animate3D();
+    }
+
+    function trigger3DMorph() {
+      if (!itemsGroup) return;
+      colorIndex = (colorIndex + 1) % themePalettes.length;
+      targetColor.setHex(themePalettes[colorIndex]);
+    }
+
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      if (itemsGroup) {
+        itemsGroup.children.forEach(child => {
+          child.rotation.x += child.userData.rotSpeed;
+          child.rotation.y += child.userData.rotSpeed;
+          child.position.y += Math.sin(Date.now() * 0.001 + child.position.x) * 0.008;
+
+          child.traverse((node) => {
+            if (node.isMesh && node.material && node.material.color) {
+              node.material.color.lerp(targetColor, 0.02);
+            }
+          });
+        });
+        pointLight.color.lerp(targetColor, 0.02);
+      }
+      renderer.render(scene, camera);
+    }
+
+    // Initialize
+    init3DBackground();
+    updateCartCount();
+    renderStudio();
+  </script>
+</body>
+</html>
